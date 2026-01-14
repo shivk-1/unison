@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="title-container">
+            <h1>{{ language }}</h1>
+        </div>
+        <div>
+            <img id="videoElement" src="/video_feed" alt="Video feed">
+        </div>
+        <div id="controls" class="button-container">
+            <p>Predicted Text: <span id="predictedText"></span></p>
+            <button onclick="clearLastCharacter()" class="button">Clear Last Character</button>
+            <button onclick="speakSentence()" class="button button2">Speak Sentence</button>
+            <button onclick="clearSentence()" class="button button3">Clear Sentence</button>
+            <button onclick="addspace()" class="button button4">Space</button>
+        </div>
+    </div>
+
+    <script>
+        const predictedTextElement = document.getElementById('predictedText');
+
+        function updatePredictedText() {
+            fetch('/get_predicted_text')
+                .then(response => response.json())
+                .then(data => {
+                    predictedTextElement.textContent = data.predicted_text;
+                });
+        }
+
+        function clearSentence() {
+            fetch('/clear_sentence', { method: 'POST' })
+                .then(response => response.json())
+                .then(() => {
+                    updatePredictedText();
+                });
+        }
+
+        function clearLastCharacter() {
+            fetch('/clear_last_character', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    predictedTextElement.textContent = data.predicted_text;
+                });
+        }
+
+        function speakSentence() {
+            fetch('/speak_sentence', { method: 'POST' });
+        }
+
+        function addspace() {
+            fetch('/add_space', { method: 'POST' });
+        }
+
+        setInterval(updatePredictedText, 1000);
+    </script>
+</body>
+</html>
